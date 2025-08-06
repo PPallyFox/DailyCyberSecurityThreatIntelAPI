@@ -1,4 +1,4 @@
-name: Deploy to Google Cloud Functions
+name: Deploy to Google Cloud Functions (Gen2)
 
 on:
   push:
@@ -11,24 +11,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Checkout repo
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Authenticate to Google Cloud
-      uses: google-github-actions/auth@v2
-      with:
-        credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      # Authenticate with Google Cloud
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
-    - name: Set up Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@v2
+      # Setup gcloud
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT }}
+          install_components: "beta"
 
-    - name: Deploy Cloud Function (Gen2)
-      run: |
-        gcloud functions deploy cisa-threat-intel \
-          --gen2 \
-          --runtime python311 \
-          --trigger-http \
-          --allow-unauthenticated \
-          --entry-point app \
-          --region ${{ secrets.GCP_REGION }} \
-          --project ${{ secrets.GCP_PROJECT }}
+      # Deploy Cloud Function Gen2
+      - name: Deploy Cloud Function
+        run: |
+          gcloud functions deploy cisa-threat-intel \
+            --gen2 \
+            --runtime python311 \
+            --region us-central1 \
+            --source . \
+            --entry-point app \
+            --trigger-http \
+            --allow-unauthenticated
