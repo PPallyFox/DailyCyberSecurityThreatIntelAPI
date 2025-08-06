@@ -1,5 +1,6 @@
 import requests
 from flask import Flask, jsonify
+import os
 
 app = Flask(__name__)
 
@@ -11,9 +12,9 @@ def get_cisa_advisories():
         response = requests.get(CISA_FEED, timeout=10)
         response.raise_for_status()
         data = response.json()
-        
+
         advisories = data.get("vulnerabilities", [])[:5]  # get latest 5
-        
+
         summary = [
             {
                 "cveID": adv.get("cveID"),
@@ -24,8 +25,12 @@ def get_cisa_advisories():
             }
             for adv in advisories
         ]
-        
+
         return jsonify({"latestAdvisories": summary})
-    
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port, debug=True)
