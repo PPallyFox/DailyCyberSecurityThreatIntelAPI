@@ -21,9 +21,10 @@ jobs:
     - name: Set up Google Cloud SDK
       uses: google-github-actions/setup-gcloud@v2
 
-    - name: Deploy Cloud Function
+    - name: Deploy Cloud Function (Gen2)
       run: |
         gcloud functions deploy cisa-threat-intel \
+          --gen2 \
           --runtime python311 \
           --trigger-http \
           --allow-unauthenticated \
