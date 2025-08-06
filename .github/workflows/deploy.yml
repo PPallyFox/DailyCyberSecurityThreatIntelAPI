@@ -3,7 +3,8 @@ name: Deploy to Google Cloud Functions
 on:
   push:
     branches:
-      - main  # deploy only when pushing to main branch
+      - main
+  workflow_dispatch:
 
 jobs:
   deploy:
